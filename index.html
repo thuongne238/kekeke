@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz GUTA Cafe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6f4e37;
+      --secondary: #d4b996;
+      --accent: #c19a6b;
+      --light: #f8f5f2;
+      --dark: #3e2723;
+      --correct: #4caf50;
+      --incorrect: #f44336;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .quiz-container {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+    
+    .question {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+    
+    .question:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .question-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: var(--accent);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    
+    .question-text {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      display: inline-block;
+      width: calc(100% - 40px);
+      vertical-align: middle;
+    }
+    
+    .options {
+      display: flex;
+      gap: 15px;
+      margin-left: 40px;
+    }
+    
+    .option {
+      position: relative;
+      flex: 1;
+    }
+    
+    .option input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .option label {
+      display: block;
+      padding: 12px 15px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .option input:checked + label {
+      background-color: var(--secondary);
+      color: var(--dark);
+      font-weight: 600;
+    }
+    
+    .option input:focus + label {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+    
+    .btn:hover {
+      background-color: var(--dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    #result {
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .score-display {
+      font-size: 2rem;
+      margin: 15px 0;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: var(--accent);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    
+    .feedback {
+      margin-top: 20px;
+      font-size: 1rem;
+      font-style: italic;
+    }
+    
+    .timer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+    }
+    
+    .timer i {
+      margin-right: 8px;
+    }
+    
+    @media (max-width: 768px) {
+      .options {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .question-text {
+        width: 100%;
+        display: block;
+        margin-top: 10px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .timer {
+        top: 10px;
+        right: 10px;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1><i class="fas fa-coffee"></i> Quiz GUTA Cafe</h1>
+      <p class="subtitle">Kiểm tra kiến thức chuẩn GUTA</p>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="timer">
+      <i class="fas fa-clock"></i>
+      <span id="time">00:00</span>
+    </div>
+    
+    <div class="quiz-container">
+      <div id="quiz"></div>
+    </div>
+    
+    <button class="btn" onclick="submitQuiz()">
+      <i class="fas fa-paper-plane"></i> Nộp bài
+    </button>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+    
+    <div id="result">
+      <h2>Kết quả bài quiz</h2>
+      <div class="score-display" id="score-display"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        "question": "Bãi đỗ xe cần được sắp xếp phù hợp để đảm bảo lối đi thông thoáng",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Khu vực ghế ngoài trời áp dụng tiêu chuẩn cụ thể sau 18:00",
+        "answer": "Sai"
+      },
+      {
+        "question": "Standee, poster và banner phải được trưng bày đầy đủ, sạch sẽ, gọn gàng",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Áp suất máy pha espresso cần duy trì ở mức 8-10 bar",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Cần xả đầu phun 5 giây, nghỉ 3 giây, lặp lại 20 lần trong vệ sinh hàng tuần",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Channeling xảy ra khi nước chảy đều qua bột cà phê",
+        "answer": "Sai"
+      },
+      {
+        "question": "Máy xay cà phê cần vệ sinh lưỡi xay hàng tuần",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Khay hâm ly cần giữ khô và ấm để duy trì nhiệt độ ly",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Phin đơn cần 9 gram bột cà phê, phin đôi cần 18 gram",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Thời gian thực hiện cà phê sữa đá là 2 phút",
+        "answer": "Sai"
+      },
+      {
+        "question": "Espresso size L cần 80mL cho cà phê đá",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Americano đá size M cần 40mL espresso",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Latte nóng có thời gian thực hiện 3 phút 30 giây",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Cà phê sữa nóng không cần sữa đặc",
+        "answer": "Sai"
+      },
+      {
+        "question": "Máy xay cà phê cần được lau sạch thân máy và phễu sau mỗi lần sử dụng",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Thùng rác không cần đậy nắp sau khi sử dụng",
+        "answer": "Sai"
+      },
+      {
+        "question": "Bồn rửa cần được vệ sinh bằng nước sạch và lau khô bằng khăn",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Cây xúc đá cần được vệ sinh bằng nước sạch",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Tay cầm chiết xuất cần lau sạch sau mỗi lần chiết xuast",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Nhân viên có thể nhuộm tóc màu sáng",
+        "answer": "Sai"
+      },
+      {
+        "question": "Nhân viên cần có mặt 15 phút trước ca làm việc",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Móng tay có thể để dài và sơn móng",
+        "answer": "Sai"
+      },
+      {
+        "question": "Đồng phục phải đúng chuẩn Guta Cafe, sạch sẽ, gọn gàng",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Nhân viên có thể ngắt lời khách hàng khi cần thiết",
+        "answer": "Sai"
+      },
+      {
+        "question": "Câu chào chuẩn là 'Guta xin chào!'",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Upselling là kỹ thuật giới thiệu sản phẩm rẻ hơn",
+        "answer": "Sai"
+      },
+      {
+        "question": "Câu chào tạm biệt chuẩn là 'Guta cảm ơn!'",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Cần lặp lại đơn hàng để xác nhận với khách",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Không cần giới thiệu Ví Guta cho khách hàng",
+        "answer": "Sai"
+      },
+      {
+        "question": "Nước đường có hạn sử dụng 30 ngày từ ngày sản xuất",
+        "answer": "Đúng"
+      },
+      {
+        "question": "FIFO có nghĩa là 'Nhập sau, xuất trước'",
+        "answer": "Sai"
+      },
+      {
+        "question": "Trà sữa sau khi pha có thể bảo quản trong tủ mát 6-8 giờ",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Cần ghi rõ ngày sản xuất và hạn sử dụng trên tem",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Nguyên tắc FIFO giúp đảm bảo sử dụng nguyên liệu cũ trước",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Đối với đơn tiền mặt giá trị lớn cần gọi xác nhận với khách trước khi pha chế",
+        "answer": "Đúng"
+      },
+      {
+        "question": "Shipper không cần gọi khách trước khi lấy hàng",
+        "answer": "Sai"
+      },
+      {
+        "question": "Cần nhấn 'Xác nhận' trên POS để khóa đơn, tránh hủy",
+        "answer": "Đúng"
+      }
+    ];
+
+    // Shuffle questions array
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Timer functionality
+    let seconds = 0;
+    const timer = setInterval(() => {
+      seconds++;
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      document.getElementById('time').textContent = 
+        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+
+    // Initialize quiz
+    const quiz = document.getElementById('quiz');
+    const shuffledQuestions = shuffleArray([...questions]);
+    
+    shuffledQuestions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML = `
+        <span class="question-number">${i + 1}</span>
+        <span class="question-text">${q.question}</span>
+        <div class="options">
+          <div class="option">
+            <input type="radio" id="q${i}-true" name="q${i}" value="Đúng">
+            <label for="q${i}-true">Đúng</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="q${i}-false" name="q${i}" value="Sai">
+            <label for="q${i}-false">Sai</label>
+          </div>
+        </div>
+      `;
+      quiz.appendChild(div);
+    });
+
+    // Update progress bar as user answers questions
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+        const progress = (answered / shuffledQuestions.length) * 100;
+        document.getElementById('progress').style.width = `${progress}%`;
+      });
+    });
+
+    function submitQuiz() {
+      clearInterval(timer);
+      
+      let score = 0;
+      const results = [];
+      
+      shuffledQuestions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const isCorrect = selected && selected.value === q.answer;
+        
+        if (isCorrect) score++;
+        
+        results.push({
+          question: q.question,
+          userAnswer: selected ? selected.value : "Không trả lời",
+          correctAnswer: q.answer,
+          isCorrect
+        });
+      });
+      
+      const percentage = Math.round((score / shuffledQuestions.length) * 100);
+      
+      // Display results
+      document.getElementById('score-display').textContent = `${score}/${shuffledQuestions.length} (${percentage}%)`;
+      document.getElementById('result').style.display = 'block';
+      
+      // Add feedback based on score
+      let feedback = "";
+      if (percentage >= 90) {
+        feedback = "Xuất sắc! Bạn thực sự hiểu rõ các tiêu chuẩn của GUTA Cafe.";
+      } else if (percentage >= 70) {
+        feedback = "Tốt! Bạn nắm được hầu hết các quy trình, nhưng cần ôn lại một số phần.";
+      } else if (percentage >= 50) {
+        feedback = "Đạt yêu cầu. Bạn cần củng cố thêm kiến thức về tiêu chuẩn GUTA.";
+      } else {
+        feedback = "Cần cải thiện. Hãy xem lại tài liệu đào tạo và làm bài quiz lại.";
+      }
+      
+      document.getElementById('feedback').textContent = feedback;
+      
+      // Scroll to results
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      
+      // Highlight correct/incorrect answers
+      results.forEach((result, i) => {
+  const questionDiv = document.querySelectorAll('.question')[i];
+  const selectedInput = document.querySelector(`input[name="q${i}"]:checked`);
+
+  if (selectedInput) {
+    if (result.isCorrect) {
+      selectedInput.nextElementSibling.style.backgroundColor = "var(--correct)";
+      selectedInput.nextElementSibling.style.color = "white";
+      questionDiv.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
+    } else {
+      selectedInput.nextElementSibling.style.backgroundColor = "var(--incorrect)";
+      selectedInput.nextElementSibling.style.color = "white";
+      questionDiv.style.backgroundColor = "rgba(244, 67, 54, 0.1)";
+
+      // Highlight correct answer
+      const correctInput = document.querySelector(`input[name="q${i}"][value="${result.correctAnswer}"]`);
+      if (correctInput) {
+        correctInput.nextElementSibling.style.backgroundColor = "var(--correct)";
+        correctInput.nextElementSibling.style.color = "white";
+      }
+    }
+  }
+});
+
+      
+      // Disable all inputs after submission
+      document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.disabled = true;
+      });
+      
+      // Change submit button to restart button
+      const submitBtn = document.querySelector('.btn');
+      submitBtn.innerHTML = '<i class="fas fa-redo"></i> Làm lại';
+      submitBtn.onclick = () => location.reload();
+    }
+  </script>
+</body>
+</html>
