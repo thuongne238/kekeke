@@ -99,43 +99,25 @@
       vertical-align: middle;
     }
     
-    .options {
-      display: flex;
-      gap: 15px;
+    .input-group {
       margin-left: 40px;
+      margin-bottom: 15px;
     }
     
-    .option {
-      position: relative;
-      flex: 1;
-    }
-    
-    .option input {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .option label {
-      display: block;
+    .answer-input {
+      width: 100%;
       padding: 12px 15px;
-      background-color: #f5f5f5;
+      border: 2px solid #f0f0f0;
       border-radius: 8px;
-      cursor: pointer;
-      text-align: center;
+      font-size: 1rem;
+      background-color: #fafafa;
       transition: all 0.3s ease;
-      font-weight: 500;
     }
     
-    .option input:checked + label {
-      background-color: var(--secondary);
-      color: var(--dark);
-      font-weight: 600;
-    }
-    
-    .option input:focus + label {
-      box-shadow: 0 0 0 2px var(--accent);
+    .answer-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background-color: white;
     }
     
     .btn {
@@ -220,13 +202,29 @@
     .timer i {
       margin-right: 8px;
     }
+
+    .answer-feedback {
+      margin-left: 40px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .correct-feedback {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--correct);
+      border-left: 4px solid var(--correct);
+    }
+
+    .incorrect-feedback {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--incorrect);
+      border-left: 4px solid var(--incorrect);
+    }
     
     @media (max-width: 768px) {
-      .options {
-        flex-direction: column;
-        gap: 10px;
-      }
-      
       .question-text {
         width: 100%;
         display: block;
@@ -250,7 +248,7 @@
   <header>
     <div class="container">
       <h1><i class="fas fa-coffee"></i> Quiz GUTA Cafe</h1>
-      <p class="subtitle">Kiểm tra kiến thức chuẩn GUTA</p>
+      <p class="subtitle">Kiểm tra kiến thức quy trình quầy pha chế</p>
     </div>
   </header>
   
@@ -282,152 +280,124 @@
   <script>
     const questions = [
       {
-        "question": "Bãi đỗ xe cần được sắp xếp phù hợp để đảm bảo lối đi thông thoáng",
-        "answer": "Đúng"
+        "question": "Quy trình mở bar diễn ra trong khoảng thời gian nào?",
+        "answer": "5h45-6h00"
       },
       {
-        "question": "Khu vực ghế ngoài trời áp dụng tiêu chuẩn cụ thể sau 18:00",
-        "answer": "Sai"
+        "question": "Trong quy trình mở bar, nhân viên cần kiểm tra những gì?",
+        "answer": "Vệ sinh quầy bar, TTB, CCDC và kiểm tra, sơ chế hàng hóa"
       },
       {
-        "question": "Standee, poster và banner phải được trưng bày đầy đủ, sạch sẽ, gọn gàng",
-        "answer": "Đúng"
+        "question": "Quy trình bàn giao ca 1 và ca 2 diễn ra vào thời gian nào?",
+        "answer": "13h45-14h"
       },
       {
-        "question": "Áp suất máy pha espresso cần duy trì ở mức 8-10 bar",
-        "answer": "Đúng"
+        "question": "Khi xử lý than phiền khách hàng, bước đầu tiên cần làm gì?",
+        "answer": "Lắng nghe: Không ngắt lời khách hàng, hãy lắng nghe khách hàng bày tỏ ý kiến"
       },
       {
-        "question": "Cần xả đầu phun 5 giây, nghỉ 3 giây, lặp lại 20 lần trong vệ sinh hàng tuần",
-        "answer": "Đúng"
+        "question": "Sau khi lắng nghe khách hàng than phiền, bước tiếp theo là gì?",
+        "answer": "Xin lỗi khách hàng, thể hiện sự đồng cảm với khách hàng, không bào chữa hay đổ lỗi"
       },
       {
-        "question": "Channeling xảy ra khi nước chảy đều qua bột cà phê",
-        "answer": "Sai"
+        "question": "Hạn sử dụng của cà phê hạt là bao lâu?",
+        "answer": "1 tháng"
       },
       {
-        "question": "Máy xay cà phê cần vệ sinh lưỡi xay hàng tuần",
-        "answer": "Đúng"
+        "question": "Sữa đặc có hạn sử dụng trong bao lâu?",
+        "answer": "2 ngày"
       },
       {
-        "question": "Khay hâm ly cần giữ khô và ấm để duy trì nhiệt độ ly",
-        "answer": "Đúng"
+        "question": "Hạn sử dụng của sữa tươi là bao nhiêu ngày?",
+        "answer": "3 ngày"
       },
       {
-        "question": "Phin đơn cần 9 gram bột cà phê, phin đôi cần 18 gram",
-        "answer": "Đúng"
+        "question": "Mứt thơm, dâu, cam có hạn sử dụng bao lâu?",
+        "answer": "30 ngày"
       },
       {
-        "question": "Thời gian thực hiện cà phê sữa đá là 2 phút",
-        "answer": "Sai"
+        "question": "Chanh nguyên trái có thể bảo quản trong bao lâu?",
+        "answer": "10 ngày"
       },
       {
-        "question": "Espresso size L cần 80mL cho cà phê đá",
-        "answer": "Đúng"
+        "question": "Nước cốt chanh có hạn sử dụng là bao lâu?",
+        "answer": "8 giờ"
       },
       {
-        "question": "Americano đá size M cần 40mL espresso",
-        "answer": "Đúng"
+        "question": "Chanh dùng để trang trí có thể sử dụng trong thời gian nào?",
+        "answer": "24 giờ"
       },
       {
-        "question": "Latte nóng có thời gian thực hiện 3 phút 30 giây",
-        "answer": "Đúng"
+        "question": "Để sơ chế trà đen nguyên lá, cần bao nhiêu gram trà?",
+        "answer": "60 gram"
       },
       {
-        "question": "Cà phê sữa nóng không cần sữa đặc",
-        "answer": "Sai"
+        "question": "Lượng nước sôi cần dùng để sơ chế trà đen nguyên lá là bao nhiêu?",
+        "answer": "1000ml"
       },
       {
-        "question": "Máy xay cà phê cần được lau sạch thân máy và phễu sau mỗi lần sử dụng",
-        "answer": "Đúng"
+        "question": "Thời gian ngâm trà đen nguyên lá là bao lâu?",
+        "answer": "15 phút"
       },
       {
-        "question": "Thùng rác không cần đậy nắp sau khi sử dụng",
-        "answer": "Sai"
+        "question": "Sau khi sơ chế trà đen nguyên lá, thành phẩm thu được là bao nhiêu ml?",
+        "answer": "800ml"
       },
       {
-        "question": "Bồn rửa cần được vệ sinh bằng nước sạch và lau khô bằng khăn",
-        "answer": "Đúng"
+        "question": "Để làm trà sữa nguyên lá, cần bao nhiêu ml bột sữa?",
+        "answer": "250ml"
       },
       {
-        "question": "Cây xúc đá cần được vệ sinh bằng nước sạch",
-        "answer": "Đúng"
+        "question": "Lượng đường cát cần dùng cho trà sữa nguyên lá là bao nhiêu?",
+        "answer": "150ml"
       },
       {
-        "question": "Tay cầm chiết xuất cần lau sạch sau mỗi lần chiết xuast",
-        "answer": "Đúng"
+        "question": "Trà sữa nguyên lá cần ủ trong bao lâu?",
+        "answer": "6-8 giờ"
       },
       {
-        "question": "Nhân viên có thể nhuộm tóc màu sáng",
-        "answer": "Sai"
+        "question": "Thể tích thành phẩm trà sữa nguyên lá là bao nhiêu?",
+        "answer": "1600ml"
       },
       {
-        "question": "Nhân viên cần có mặt 15 phút trước ca làm việc",
-        "answer": "Đúng"
+        "question": "Để sơ chế trà Olong đặc biệt cần bao nhiêu gram trà?",
+        "answer": "100 gram"
       },
       {
-        "question": "Móng tay có thể để dài và sơn móng",
-        "answer": "Sai"
+        "question": "Thành phẩm trà Olong đặc biệt sau khi lọc là bao nhiêu ml?",
+        "answer": "700ml"
       },
       {
-        "question": "Đồng phục phải đúng chuẩn Guta Cafe, sạch sẽ, gọn gàng",
-        "answer": "Đúng"
+        "question": "Thể tích thành phẩm trà sữa Olong đặc biệt là bao nhiêu?",
+        "answer": "1500ml"
       },
       {
-        "question": "Nhân viên có thể ngắt lời khách hàng khi cần thiết",
-        "answer": "Sai"
+        "question": "Trà sữa nguyên lá size S cần bao nhiêu ml?",
+        "answer": "130ml"
       },
       {
-        "question": "Câu chào chuẩn là 'Guta xin chào!'",
-        "answer": "Đúng"
+        "question": "Trà sữa nguyên lá size L cần bao nhiêu ml?",
+        "answer": "230ml"
       },
       {
-        "question": "Upselling là kỹ thuật giới thiệu sản phẩm rẻ hơn",
-        "answer": "Sai"
+        "question": "Với trà sữa Olong nhãn mật ong size L, cần bao nhiêu nhãn trái?",
+        "answer": "3 nhãn"
       },
       {
-        "question": "Câu chào tạm biệt chuẩn là 'Guta cảm ơn!'",
-        "answer": "Đúng"
+        "question": "Xí muội có hạn sử dụng là bao lâu?",
+        "answer": "6 tháng"
       },
       {
-        "question": "Cần lặp lại đơn hàng để xác nhận với khách",
-        "answer": "Đúng"
+        "question": "Xí muội xay có hạn sử dụng trong bao lâu?",
+        "answer": "30 ngày"
       },
       {
-        "question": "Không cần giới thiệu Ví Guta cho khách hàng",
-        "answer": "Sai"
+        "question": "Nước cốt dừa có thể sử dụng trong bao nhiêu ngày?",
+        "answer": "5 ngày"
       },
       {
-        "question": "Nước đường có hạn sử dụng 30 ngày từ ngày sản xuất",
-        "answer": "Đúng"
-      },
-      {
-        "question": "FIFO có nghĩa là 'Nhập sau, xuất trước'",
-        "answer": "Sai"
-      },
-      {
-        "question": "Trà sữa sau khi pha có thể bảo quản trong tủ mát 6-8 giờ",
-        "answer": "Đúng"
-      },
-      {
-        "question": "Cần ghi rõ ngày sản xuất và hạn sử dụng trên tem",
-        "answer": "Đúng"
-      },
-      {
-        "question": "Nguyên tắc FIFO giúp đảm bảo sử dụng nguyên liệu cũ trước",
-        "answer": "Đúng"
-      },
-      {
-        "question": "Đối với đơn tiền mặt giá trị lớn cần gọi xác nhận với khách trước khi pha chế",
-        "answer": "Đúng"
-      },
-      {
-        "question": "Shipper không cần gọi khách trước khi lấy hàng",
-        "answer": "Sai"
-      },
-      {
-        "question": "Cần nhấn 'Xác nhận' trên POS để khóa đơn, tránh hủy",
-        "answer": "Đúng"
+        "question": "Trước khi sử dụng trà sữa, cần làm gì?",
+        "answer": "Lắc đều trước khi sử dụng"
       }
     ];
 
@@ -460,28 +430,60 @@
       div.innerHTML = `
         <span class="question-number">${i + 1}</span>
         <span class="question-text">${q.question}</span>
-        <div class="options">
-          <div class="option">
-            <input type="radio" id="q${i}-true" name="q${i}" value="Đúng">
-            <label for="q${i}-true">Đúng</label>
-          </div>
-          <div class="option">
-            <input type="radio" id="q${i}-false" name="q${i}" value="Sai">
-            <label for="q${i}-false">Sai</label>
-          </div>
+        <div class="input-group">
+          <input type="text" class="answer-input" id="answer-${i}" placeholder="Nhập câu trả lời của bạn...">
         </div>
+        <div class="answer-feedback" id="feedback-${i}"></div>
       `;
       quiz.appendChild(div);
     });
 
-    // Update progress bar as user answers questions
-    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+    // Update progress bar as user types answers
+    document.querySelectorAll('.answer-input').forEach(input => {
+      input.addEventListener('input', () => {
+        const answered = Array.from(document.querySelectorAll('.answer-input')).filter(inp => inp.value.trim() !== '').length;
         const progress = (answered / shuffledQuestions.length) * 100;
         document.getElementById('progress').style.width = `${progress}%`;
       });
     });
+
+    // Function to normalize text for comparison
+    function normalizeText(text) {
+      return text.toLowerCase()
+        .replace(/[áàảãạâấầẩẫậăắằẳẵặ]/g, 'a')
+        .replace(/[éèẻẽẹêếềểễệ]/g, 'e')
+        .replace(/[íìỉĩị]/g, 'i')
+        .replace(/[óòỏõọôốồổỗộơớờởỡợ]/g, 'o')
+        .replace(/[úùủũụưứừửữự]/g, 'u')
+        .replace(/[ýỳỷỹỵ]/g, 'y')
+        .replace(/đ/g, 'd')
+        .replace(/[^\w\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    // Function to check if answer is correct
+    function isAnswerCorrect(userAnswer, correctAnswer) {
+      const normalizedUser = normalizeText(userAnswer);
+      const normalizedCorrect = normalizeText(correctAnswer);
+      
+      // Exact match
+      if (normalizedUser === normalizedCorrect) return true;
+      
+      // Partial match for key terms
+      const correctWords = normalizedCorrect.split(' ').filter(word => word.length > 2);
+      const userWords = normalizedUser.split(' ');
+      
+      let matchedWords = 0;
+      correctWords.forEach(word => {
+        if (userWords.some(userWord => userWord.includes(word) || word.includes(userWord))) {
+          matchedWords++;
+        }
+      });
+      
+      // Consider correct if at least 60% of important words match
+      return matchedWords / correctWords.length >= 0.6;
+    }
 
     function submitQuiz() {
       clearInterval(timer);
@@ -490,17 +492,29 @@
       const results = [];
       
       shuffledQuestions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        const isCorrect = selected && selected.value === q.answer;
+        const userInput = document.getElementById(`answer-${i}`).value.trim();
+        const isCorrect = isAnswerCorrect(userInput, q.answer);
         
         if (isCorrect) score++;
         
         results.push({
           question: q.question,
-          userAnswer: selected ? selected.value : "Không trả lời",
+          userAnswer: userInput || "Không trả lời",
           correctAnswer: q.answer,
           isCorrect
         });
+
+        // Show feedback for each answer
+        const feedbackDiv = document.getElementById(`feedback-${i}`);
+        feedbackDiv.style.display = 'block';
+        
+        if (isCorrect) {
+          feedbackDiv.className = 'answer-feedback correct-feedback';
+          feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> Chính xác!`;
+        } else {
+          feedbackDiv.className = 'answer-feedback incorrect-feedback';
+          feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> Sai. Đáp án đúng: <strong>${q.answer}</strong>`;
+        }
       });
       
       const percentage = Math.round((score / shuffledQuestions.length) * 100);
@@ -512,11 +526,11 @@
       // Add feedback based on score
       let feedback = "";
       if (percentage >= 90) {
-        feedback = "Xuất sắc! Bạn thực sự hiểu rõ các tiêu chuẩn của GUTA Cafe.";
+        feedback = "Xuất sắc! Bạn thực sự hiểu rõ các quy trình của GUTA Cafe.";
       } else if (percentage >= 70) {
         feedback = "Tốt! Bạn nắm được hầu hết các quy trình, nhưng cần ôn lại một số phần.";
       } else if (percentage >= 50) {
-        feedback = "Đạt yêu cầu. Bạn cần củng cố thêm kiến thức về tiêu chuẩn GUTA.";
+        feedback = "Đạt yêu cầu. Bạn cần củng cố thêm kiến thức về quy trình quầy pha chế.";
       } else {
         feedback = "Cần cải thiện. Hãy xem lại tài liệu đào tạo và làm bài quiz lại.";
       }
@@ -526,35 +540,10 @@
       // Scroll to results
       document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
       
-      // Highlight correct/incorrect answers
-      results.forEach((result, i) => {
-  const questionDiv = document.querySelectorAll('.question')[i];
-  const selectedInput = document.querySelector(`input[name="q${i}"]:checked`);
-
-  if (selectedInput) {
-    if (result.isCorrect) {
-      selectedInput.nextElementSibling.style.backgroundColor = "var(--correct)";
-      selectedInput.nextElementSibling.style.color = "white";
-      questionDiv.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
-    } else {
-      selectedInput.nextElementSibling.style.backgroundColor = "var(--incorrect)";
-      selectedInput.nextElementSibling.style.color = "white";
-      questionDiv.style.backgroundColor = "rgba(244, 67, 54, 0.1)";
-
-      // Highlight correct answer
-      const correctInput = document.querySelector(`input[name="q${i}"][value="${result.correctAnswer}"]`);
-      if (correctInput) {
-        correctInput.nextElementSibling.style.backgroundColor = "var(--correct)";
-        correctInput.nextElementSibling.style.color = "white";
-      }
-    }
-  }
-});
-
-      
       // Disable all inputs after submission
-      document.querySelectorAll('input[type="radio"]').forEach(input => {
+      document.querySelectorAll('.answer-input').forEach(input => {
         input.disabled = true;
+        input.style.backgroundColor = '#f5f5f5';
       });
       
       // Change submit button to restart button
