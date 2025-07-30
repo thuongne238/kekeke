@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz GUTA Cafe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6f4e37;
+      --secondary: #d4b996;
+      --accent: #c19a6b;
+      --light: #f8f5f2;
+      --dark: #3e2723;
+      --correct: #4caf50;
+      --incorrect: #f44336;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .quiz-container {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+    
+    .question {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+    
+    .question:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .question-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: var(--accent);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    
+    .question-text {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      display: inline-block;
+      width: calc(100% - 40px);
+      vertical-align: middle;
+    }
+    
+    .input-group {
+      margin-left: 40px;
+      margin-bottom: 15px;
+    }
+    
+    .answer-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #f0f0f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: #fafafa;
+      transition: all 0.3s ease;
+    }
+    
+    .answer-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background-color: white;
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+    
+    .btn:hover {
+      background-color: var(--dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    #result {
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .score-display {
+      font-size: 2rem;
+      margin: 15px 0;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: var(--accent);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    
+    .feedback {
+      margin-top: 20px;
+      font-size: 1rem;
+      font-style: italic;
+    }
+    
+    .timer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+    }
+    
+    .timer i {
+      margin-right: 8px;
+    }
+
+    .answer-feedback {
+      margin-left: 40px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .correct-feedback {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--correct);
+      border-left: 4px solid var(--correct);
+    }
+
+    .incorrect-feedback {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--incorrect);
+      border-left: 4px solid var(--incorrect);
+    }
+    
+    @media (max-width: 768px) {
+      .question-text {
+        width: 100%;
+        display: block;
+        margin-top: 10px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .timer {
+        top: 10px;
+        right: 10px;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1><i class="fas fa-coffee"></i> Quiz GUTA Cafe</h1>
+      <p class="subtitle">Kiểm tra kiến thức quy trình quầy pha chế</p>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="timer">
+      <i class="fas fa-clock"></i>
+      <span id="time">00:00</span>
+    </div>
+    
+    <div class="quiz-container">
+      <div id="quiz"></div>
+    </div>
+    
+    <button class="btn" onclick="submitQuiz()">
+      <i class="fas fa-paper-plane"></i> Nộp bài
+    </button>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+    
+    <div id="result">
+      <h2>Kết quả bài quiz</h2>
+      <div class="score-display" id="score-display"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        "question": "Quy trình mở bar diễn ra trong khoảng thời gian nào?",
+        "answer": "5h45-6h00"
+      },
+      {
+        "question": "Trong quy trình mở bar, nhân viên cần kiểm tra những gì?",
+        "answer": "Vệ sinh quầy bar, TTB, CCDC và kiểm tra, sơ chế hàng hóa"
+      },
+      {
+        "question": "Quy trình bàn giao ca 1 và ca 2 diễn ra vào thời gian nào?",
+        "answer": "13h45-14h"
+      },
+      {
+        "question": "Khi xử lý than phiền khách hàng, bước đầu tiên cần làm gì?",
+        "answer": "Lắng nghe: Không ngắt lời khách hàng, hãy lắng nghe khách hàng bày tỏ ý kiến"
+      },
+      {
+        "question": "Sau khi lắng nghe khách hàng than phiền, bước tiếp theo là gì?",
+        "answer": "Xin lỗi khách hàng, thể hiện sự đồng cảm với khách hàng, không bào chữa hay đổ lỗi"
+      },
+      {
+        "question": "Hạn sử dụng của cà phê hạt là bao lâu?",
+        "answer": "1 tháng"
+      },
+      {
+        "question": "Sữa đặc có hạn sử dụng trong bao lâu?",
+        "answer": "2 ngày"
+      },
+      {
+        "question": "Hạn sử dụng của sữa tươi là bao nhiêu ngày?",
+        "answer": "3 ngày"
+      },
+      {
+        "question": "Mứt thơm, dâu, cam có hạn sử dụng bao lâu?",
+        "answer": "30 ngày"
+      },
+      {
+        "question": "Chanh nguyên trái có thể bảo quản trong bao lâu?",
+        "answer": "10 ngày"
+      },
+      {
+        "question": "Nước cốt chanh có hạn sử dụng là bao lâu?",
+        "answer": "8 giờ"
+      },
+      {
+        "question": "Chanh dùng để trang trí có thể sử dụng trong thời gian nào?",
+        "answer": "24 giờ"
+      },
+      {
+        "question": "Để sơ chế trà đen nguyên lá, cần bao nhiêu gram trà?",
+        "answer": "60 gram"
+      },
+      {
+        "question": "Lượng nước sôi cần dùng để sơ chế trà đen nguyên lá là bao nhiêu?",
+        "answer": "1000ml"
+      },
+      {
+        "question": "Thời gian ngâm trà đen nguyên lá là bao lâu?",
+        "answer": "15 phút"
+      },
+      {
+        "question": "Sau khi sơ chế trà đen nguyên lá, thành phẩm thu được là bao nhiêu ml?",
+        "answer": "800ml"
+      },
+      {
+        "question": "Để làm trà sữa nguyên lá, cần bao nhiêu ml bột sữa?",
+        "answer": "250ml"
+      },
+      {
+        "question": "Lượng đường cát cần dùng cho trà sữa nguyên lá là bao nhiêu?",
+        "answer": "150ml"
+      },
+      {
+        "question": "Trà sữa nguyên lá cần ủ trong bao lâu?",
+        "answer": "6-8 giờ"
+      },
+      {
+        "question": "Thể tích thành phẩm trà sữa nguyên lá là bao nhiêu?",
+        "answer": "1600ml"
+      },
+      {
+        "question": "Để sơ chế trà Olong đặc biệt cần bao nhiêu gram trà?",
+        "answer": "100 gram"
+      },
+      {
+        "question": "Thành phẩm trà Olong đặc biệt sau khi lọc là bao nhiêu ml?",
+        "answer": "700ml"
+      },
+      {
+        "question": "Thể tích thành phẩm trà sữa Olong đặc biệt là bao nhiêu?",
+        "answer": "1500ml"
+      },
+      {
+        "question": "Trà sữa nguyên lá size S cần bao nhiêu ml?",
+        "answer": "130ml"
+      },
+      {
+        "question": "Trà sữa nguyên lá size L cần bao nhiêu ml?",
+        "answer": "230ml"
+      },
+      {
+        "question": "Với trà sữa Olong nhãn mật ong size L, cần bao nhiêu nhãn trái?",
+        "answer": "3 nhãn"
+      },
+      {
+        "question": "Xí muội có hạn sử dụng là bao lâu?",
+        "answer": "6 tháng"
+      },
+      {
+        "question": "Xí muội xay có hạn sử dụng trong bao lâu?",
+        "answer": "30 ngày"
+      },
+      {
+        "question": "Nước cốt dừa có thể sử dụng trong bao nhiêu ngày?",
+        "answer": "5 ngày"
+      },
+      {
+        "question": "Trước khi sử dụng trà sữa, cần làm gì?",
+        "answer": "Lắc đều trước khi sử dụng"
+      }
+    ];
+
+    // Shuffle questions array
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Timer functionality
+    let seconds = 0;
+    const timer = setInterval(() => {
+      seconds++;
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      document.getElementById('time').textContent = 
+        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+
+    // Initialize quiz
+    const quiz = document.getElementById('quiz');
+    const shuffledQuestions = shuffleArray([...questions]);
+    
+    shuffledQuestions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML = `
+        <span class="question-number">${i + 1}</span>
+        <span class="question-text">${q.question}</span>
+        <div class="input-group">
+          <input type="text" class="answer-input" id="answer-${i}" placeholder="Nhập câu trả lời của bạn...">
+        </div>
+        <div class="answer-feedback" id="feedback-${i}"></div>
+      `;
+      quiz.appendChild(div);
+    });
+
+    // Update progress bar as user types answers
+    document.querySelectorAll('.answer-input').forEach(input => {
+      input.addEventListener('input', () => {
+        const answered = Array.from(document.querySelectorAll('.answer-input')).filter(inp => inp.value.trim() !== '').length;
+        const progress = (answered / shuffledQuestions.length) * 100;
+        document.getElementById('progress').style.width = `${progress}%`;
+      });
+    });
+
+    // Function to normalize text for comparison
+    function normalizeText(text) {
+      return text.toLowerCase()
+        .replace(/[áàảãạâấầẩẫậăắằẳẵặ]/g, 'a')
+        .replace(/[éèẻẽẹêếềểễệ]/g, 'e')
+        .replace(/[íìỉĩị]/g, 'i')
+        .replace(/[óòỏõọôốồổỗộơớờởỡợ]/g, 'o')
+        .replace(/[úùủũụưứừửữự]/g, 'u')
+        .replace(/[ýỳỷỹỵ]/g, 'y')
+        .replace(/đ/g, 'd')
+        .replace(/[^\w\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    // Function to check if answer is correct
+    function isAnswerCorrect(userAnswer, correctAnswer) {
+      const normalizedUser = normalizeText(userAnswer);
+      const normalizedCorrect = normalizeText(correctAnswer);
+      
+      // Exact match
+      if (normalizedUser === normalizedCorrect) return true;
+      
+      // Partial match for key terms
+      const correctWords = normalizedCorrect.split(' ').filter(word => word.length > 2);
+      const userWords = normalizedUser.split(' ');
+      
+      let matchedWords = 0;
+      correctWords.forEach(word => {
+        if (userWords.some(userWord => userWord.includes(word) || word.includes(userWord))) {
+          matchedWords++;
+        }
+      });
+      
+      // Consider correct if at least 60% of important words match
+      return matchedWords / correctWords.length >= 0.6;
+    }
+
+    function submitQuiz() {
+      clearInterval(timer);
+      
+      let score = 0;
+      const results = [];
+      
+      shuffledQuestions.forEach((q, i) => {
+        const userInput = document.getElementById(`answer-${i}`).value.trim();
+        const isCorrect = isAnswerCorrect(userInput, q.answer);
+        
+        if (isCorrect) score++;
+        
+        results.push({
+          question: q.question,
+          userAnswer: userInput || "Không trả lời",
+          correctAnswer: q.answer,
+          isCorrect
+        });
+
+        // Show feedback for each answer
+        const feedbackDiv = document.getElementById(`feedback-${i}`);
+        feedbackDiv.style.display = 'block';
+        
+        if (isCorrect) {
+          feedbackDiv.className = 'answer-feedback correct-feedback';
+          feedbackDiv.innerHTML = `<i class="fas fa-check-circle"></i> Chính xác!`;
+        } else {
+          feedbackDiv.className = 'answer-feedback incorrect-feedback';
+          feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> Sai. Đáp án đúng: <strong>${q.answer}</strong>`;
+        }
+      });
+      
+      const percentage = Math.round((score / shuffledQuestions.length) * 100);
+      
+      // Display results
+      document.getElementById('score-display').textContent = `${score}/${shuffledQuestions.length} (${percentage}%)`;
+      document.getElementById('result').style.display = 'block';
+      
+      // Add feedback based on score
+      let feedback = "";
+      if (percentage >= 90) {
+        feedback = "Xuất sắc! Bạn thực sự hiểu rõ các quy trình của GUTA Cafe.";
+      } else if (percentage >= 70) {
+        feedback = "Tốt! Bạn nắm được hầu hết các quy trình, nhưng cần ôn lại một số phần.";
+      } else if (percentage >= 50) {
+        feedback = "Đạt yêu cầu. Bạn cần củng cố thêm kiến thức về quy trình quầy pha chế.";
+      } else {
+        feedback = "Cần cải thiện. Hãy xem lại tài liệu đào tạo và làm bài quiz lại.";
+      }
+      
+      document.getElementById('feedback').textContent = feedback;
+      
+      // Scroll to results
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      
+      // Disable all inputs after submission
+      document.querySelectorAll('.answer-input').forEach(input => {
+        input.disabled = true;
+        input.style.backgroundColor = '#f5f5f5';
+      });
+      
+      // Change submit button to restart button
+      const submitBtn = document.querySelector('.btn');
+      submitBtn.innerHTML = '<i class="fas fa-redo"></i> Làm lại';
+      submitBtn.onclick = () => location.reload();
+    }
+  </script>
+</body>
+</html>
